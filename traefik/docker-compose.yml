@@ -1,0 +1,37 @@
+---
+services:
+  traefik:
+    image: traefik:v3.1.5
+    container_name: traefik
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"  # Traefik dashboard
+    environment:
+      - CF_DNS_API_TOKEN={CF_DNS_API_TOKEN}
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "./config/traefik.yml:/etc/traefik/traefik.yml:ro"
+      - "./logs/traefik.log:/var/log/traefik.log:rw"
+      - "./config/acme.json:/acme.json:rw"
+    restart: unless-stopped
+    networks:
+      - n8n
+  
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    labels:
+      - "traefik.enable=true" 
+      # HTTPS PROTOCOL - let's encrypt
+      - "traefik.http.routers.nginx-https.tls=true"
+      - "traefik.http.routers.nginx-https.tls.certresolver=cloudflare"
+      - "traefik.http.routers.nginx-https.entrypoints=websecure"
+      - "traefik.http.routers.nginx-https.rule=Host(`abc.seudominio.online`)" 
+    restart: unless-stopped
+    networks:
+      - n8n
+
+networks:
+  n8n:
+    external: true

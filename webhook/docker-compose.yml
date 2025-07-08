@@ -1,0 +1,39 @@
+---
+services:
+  traefik:
+    image: traefik:v3.1.5
+    container_name: traefik
+    ports:
+      - "80:80"
+      - "443:443" 
+    environment:
+      - CF_DNS_API_TOKEN={CF_DNS_API_TOKEN}
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "./config/traefik.yml:/etc/traefik/traefik.yml:ro"
+      - "./logs/traefik.log:/var/log/traefik.log:rw"
+      - "./config/acme.json:/acme.json:rw"
+    restart: unless-stopped
+    networks:
+      - n8n
+  
+  webhook:
+    image: n8nio/n8n:latest
+    container_name: webhook
+    env_file:
+      - .env
+    labels:
+      - "traefik.enable=true" 
+      # HTTPS PROTOCOL - let's encrypt
+      - "traefik.http.routers.webhook-https.tls=true"
+      - "traefik.http.routers.webhook-https.tls.certresolver=cloudflare"
+      - "traefik.http.routers.webhook-https.entrypoints=websecure"
+      - "traefik.http.routers.webhook-https.rule=Host(`abc.seudominio.online`)" 
+    restart: unless-stopped
+    networks:
+      - n8n
+    command: webhook    
+
+networks:
+  n8n:
+    external: true
