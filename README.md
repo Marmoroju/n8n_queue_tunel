@@ -72,6 +72,17 @@ Esse serviço irá trazer mais proteção para a aplicação, pois servirá como
 - Pode levar de 15 minutos a 24 horas para o domínio se propagar com os novos servidores de DNS.
 - No menu `DNS` criar o filtro CNAME e A
 
+### Volumes - Docker - Backup
+Caso decida seguir a criação de volume padrão descrita aqui, estes são os locais de armazenamento interno do Docker. Quando fizer a configuração de backup, aponte para estes locais abaixo.
+```bash 
+# Ficam neste caminho abaixo e são acessados como root.
+/var/lib/docker/volumes/VOLUME_CRIADO/_data
+ 
+# Os arquivos no n8n ficam em diretórios ocultos
+/var/lib/docker/volumes/VOLUME_CRIADO/_data.cache 
+/var/lib/docker/volumes/VOLUME_CRIADO/_data.n8n 
+```
+
 ### Instalação do docker
 ```bash
 curl -fsSL https://get.docker.com | bash
@@ -193,6 +204,7 @@ VARIAVEIS_MAPEADAS = {
 ```
 
 ### Observações
-No script `run_containers.sh` os códigos de execução dos containers foram passados com o argumento `--rm`, porém se quiser que eles restartem qsempre que houver algum erro altere esse argumento para `--restart always`.
+- No script `run_containers.sh` os códigos de execução dos containers foram passados com o argumento `--rm`, porém se quiser que eles restartem qsempre que houver algum erro altere esse argumento para `--restart always`.
 
+- Definir o consumo de memória e cpu de cada container.
 
