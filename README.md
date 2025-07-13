@@ -9,6 +9,102 @@
 - [QUIC - Doc](https://github.com/quic-go/quic-go/wiki/UDP-Buffer-Sizes)
 
 
+## N8N
+- O que é o n8n?
+    - O n8n é uma ferramenta online que ajuda a automatizar tarefas do dia a dia — como conectar sistemas, enviar e receber dados, criar fluxos automáticos — sem precisar escrever muitos códigos. Ele funciona como um painel visual onde você monta o seu processo com blocos e ligações, como se fosse um quebra-cabeça e ainda permite usar inteligência artificial nos seus fluxos.
+
+- O que ele faz na prática?
+    - Conectar sistemas diferentes (como sites, bancos de dados e ferramentas internas);
+    - Criar atendimentos automáticos;
+    - Organizar e controlar processos;
+    - Evitar tarefas repetitivas, deixando a máquina cuidar disso;
+    - Tudo isso acontece nos chamados workflows, que são os fluxos de trabalho que você monta.
+
+- O que são Workflows?
+    - imagine um roteiro. Sempre que algo acontecer — por exemplo, alguém enviar um formulário ou uma mensagem — esse roteiro começa. Ele pode:
+    - Buscar uma informação;
+    - Enviar um e-mail;
+    - Gravar dados no sistema;
+    - Acionar outro serviço;
+    - Esse "algo" que inicia o processo é chamado de gatilho.
+
+- Webhook, o que é?
+    - O Webhook é como um “vigia”. Ele fica de olho em mudanças em outros sistemas (como um pedido novo, uma mensagem ou uma atualização) e avisa o n8n para começar a executar um workflow.
+
+- Workers, quem são?
+    - Os Workers são os “funcionários digitais” do n8n. Eles pegam a tarefa que o sistema manda e executam. Depois avisam que terminaram. Eles trabalham nos bastidores pra que tudo funcione.
+
+- Editor, para que serve?
+    - O Editor é a interface principal do n8n, onde você desenha os workflows. Ele também:
+    - Recebe os avisos (webhooks);
+    - Distribui tarefas (workers);
+    - Exibe tudo graficamente;
+    - Ou seja, o Editor é tipo a central de comando do sistema.
+
+### Como usar o n8n?
+- PaaS (Plataforma como Serviço)
+    - Você entra no site, cria uma conta e já começa a usar;
+    - Tudo já está pronto: infraestrutura, escalabilidade, atualizações;
+    - É grátis por 15 dias. Depois você escolhe um plano;
+    - Tem limite de uso, mas acesso completo às configurações;
+    - A infraestrutura disponibilizada é limitada, assim como as execuções.
+
+- Self-Hosted (Hospedagem própria)
+    - Você instala o sistema onde quiser: seu próprio servidor, VPS ou nuvem;
+    - Você cuida de tudo: manutenção, segurança, escalabilidade;
+    - Não tem limite de uso, mas o acesso às configurações é mais restrito.
+
+### Boa prática de infraestrutura Self-Hosted - Visão Geral
+É melhor separar os serviços — Editor, Webhook e Workers — para que cada um faça só sua parte. Assim, o sistema fica mais leve, rápido e confiável.
+
+- Estamos montando uma estrutura local para o n8n, uma ferramenta de automação. Para isso, vamos usar containers, que são como caixinhas isoladas onde cada serviço roda com segurança e sem interferir nos outros. Usamos o Docker para criar essas caixinhas.
+
+- O que é Docker?
+    - Imagine que cada serviço do n8n (como o Editor, o Worker e o Webhook) é uma “caixinha” com tudo que ele precisa para funcionar. O Docker é a ferramenta que cria essas caixinhas, chamadas de containers. Assim, cada serviço roda isolado, sem bagunçar o sistema principal.
+
+- Serviços que compõem essa infraestrutura de 'caixinha'
+    - `Editor:` É a interface principal do n8n, onde criamos os fluxos de automação;
+    - `Webhook:` Escuta eventos externo e dispara os fluxos automaticamente;
+    - `Worker:` Executa as tarefas dos fluxos e informa quando termina;
+    - `PostgreSQL:` Banco de dados que guarda os fluxos, configuações e histórico;
+    - `Redis:` Gerencia filas de tarefas e ajuda os Workers a saber o que executar;
+    - `Traefik:` É o proxy-reverso, isto é, o porteiro da casa que recebe os acessos externos e direciona para o serviço correto, isolando os demais;
+    - `Cloudflared:` Cria um túnel seguro entre a nossa infraestrutura e a internet sem precisar abrir portas. Neste cenário, ele irá apontar para o porteiro.
+
+- Por quê o Traefik + Cloudflared?
+    - Eles integram e interagem com maior facilidade a outras ferramentas, além disso:
+    - O Traefik possui mais opções de configurações como loadbalancer, roteadores, autenticadores. Pode monitorar toda a rede do Docker e tem sido mais aceito pela comunidade;
+    - Cloudflared, além de ser um serviço de proxy na web, os serviços oferecidos no plano free atendem com toda a segurança necessária, por exemplo o próprio Zero Trust.
+
+- Segurança e Escalabilidade
+    - Separar os serviços evita que um sobrecarregue o outro;
+    - Redis garante que os Workers não fiquem perdidos ou sobrecarregados;
+    - Traefik + Cloudflared protegem o acesso externo com criptografia e controle de entrada;
+    - PostgreSQL mantém tudo salvo com segurança.
+
+- Explicando com uma metáfora - Imagine que estamos montando uma fábrica automatizada:
+    - O Editor é o gerente que organiza tudo;
+    - O Webhook é o sensor que detecta quando algo acontece;
+    - Os Workers são os operários que fazem o trabalho;
+    - O Redis é o quadro de tarefas;
+    - O PostgreSQL é o arquivo da fábrica;
+    - O Traefik é o segurança da portaria;
+    - O Cloudflared é o túnel secreto que permite visitas seguras sem abrir os portões.
+
+### O que é Cultura DevOps?
+Visto que a infraestrutura local utiliza ferramentas DevOps, será bom entender sobre essa cultura.
+
+- DevOps não é só uma coleção de ferramentas — é uma forma de trabalhar em equipe. O nome vem da junção de Dev (desenvolvimento) e Ops (operações), e a ideia principal é quebrar barreiras entre os times que criam o software e os que cuidam da infraestrutura.
+
+- Princípios da Cultura DevOps
+    - `Colaboração:` Desenvolvedores e equipe de infraestrutura trabalham juntos desde o início do projeto.
+    - `Automação:` Tarefas repetitivas (como testes, deploys e monitoramento) são feitas por máquinas.
+    - `Responsabilidade compartilhada:` Todos cuidam da qualidade e estabilidade do sistema — não existe “culpa do outro time”.
+    - `Entrega contínua:` O software é atualizado com frequência, de forma segura e rápida.
+    - `Feedback constante:` Monitoramos o sistema e aprendemos com os erros para melhorar sempre.
+
+
+
 ## Leia antes de iniciar
 
 0. É preciso um domínio e ter ele configurado na Cloudflare
