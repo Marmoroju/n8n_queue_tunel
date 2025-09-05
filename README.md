@@ -103,7 +103,12 @@ Visto que a infraestrutura local utiliza ferramentas DevOps, será bom entender 
     - `Entrega contínua:` O software é atualizado com frequência, de forma segura e rápida.
     - `Feedback constante:` Monitoramos o sistema e aprendemos com os erros para melhorar sempre.
 
+- Metáfora para entender
+    - Imagine uma fábrica moderna:
+    - Antes do DevOps, cada setor trabalhava isolado — o projeto demorava, dava erro e ninguém sabia quem resolveria.
+    - Com DevOps, todos os setores trabalham juntos, com máquinas automatizadas e comunicação direta. O resultado? Entregas mais rápidas, menos erros e um ambiente mais leve.
 
+Em resumo, DevOps é sobre mentalidade. É sair do “cada um no seu quadrado” e entrar no “estamos juntos para entregar valor ao cliente”. É sobre empatia, transparência e melhoria contínua.
 
 ## Leia antes de iniciar
 
@@ -143,7 +148,7 @@ Visto que a infraestrutura local utiliza ferramentas DevOps, será bom entender 
 6º: Traefik
 7º: Webhook
 ```
-9. Antes de chegar ao caminho feliz, teste container por container e sua cominicação com o ambiente.
+9. Antes de chegar ao caminho feliz, teste container por container e sua comunicação com o ambiente.
 
 ## CONFIGURAÇÕES
 
@@ -175,8 +180,8 @@ Caso decida seguir a criação de volume padrão descrita aqui, estes são os lo
 /var/lib/docker/volumes/VOLUME_CRIADO/_data
  
 # Os arquivos no n8n ficam em diretórios ocultos
-/var/lib/docker/volumes/VOLUME_CRIADO/_data.cache 
-/var/lib/docker/volumes/VOLUME_CRIADO/_data.n8n 
+/var/lib/docker/volumes/VOLUME_CRIADO/_data/.cache 
+/var/lib/docker/volumes/VOLUME_CRIADO/_data/.n8n 
 ```
 
 ### Instalação do docker
